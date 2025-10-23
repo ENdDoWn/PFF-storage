@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "PFF Storage Backend API with Elysia and AWS Services",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --watch src/app.ts",
     "start": "bun src/index.ts",
     "build": "bun build src/index.ts --outdir ./dist --target bun",
     "test": "bun test",

@@ -25,6 +25,17 @@ const client = new DynamoDBClient({
 // Create the DocumentClient for easier JSON handling
 const docClient = DynamoDBDocumentClient.from(client);
 
+// Database configuration object that can be used as a default export
+const database = {
+  docClient,
+  client,
+  TABLE_NAME,
+  QueryCommand,
+  PutCommand,
+  TransactWriteCommand
+};
+
+// Export named exports
 export { 
   docClient, 
   client, 
@@ -33,3 +44,6 @@ export {
   PutCommand,
   TransactWriteCommand
 };
+
+// Add default export
+export default database;

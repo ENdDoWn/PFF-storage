@@ -1,8 +1,6 @@
 import "../index.css"
 import bgLogin from '../assets/bg-login.png'
-
-// Temporarily commented out to debug white screen
-// import { signIn } from 'aws-amplify/auth';
+import { signIn } from 'aws-amplify/auth';
 // import BoxRegister from "../components/BoxRegis"
 
 import { useState } from "react"
@@ -19,11 +17,10 @@ function Login() {
         setLoading(true);
         setError("");
         try {
-            // Temporarily disabled Amplify auth for debugging
-            // const { isSignedIn, nextStep } = await signIn({ 
-            //     username, 
-            //     password 
-            // });
+            const { isSignedIn, nextStep } = await signIn({ 
+                username, 
+                password 
+            });
             console.log("Login attempt:", { username });
             alert("Login form submitted (Amplify auth disabled for debugging)!");
         } catch (err) {

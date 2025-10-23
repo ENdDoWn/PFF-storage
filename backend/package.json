@@ -1,16 +1,35 @@
 {
-  "name": "backend",
+  "name": "pff-storage-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "PFF Storage Backend API with Elysia and AWS Services",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "bun build src/index.ts --outdir ./dist --target bun",
+    "test": "bun test",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write \"src/**/*.ts\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "elysia": "latest",
+    "@elysiajs/jwt": "^1.0.0",
+    "@elysiajs/cors": "^1.0.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "@aws-sdk/client-ses": "^3.0.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.0.0",
+    "aws-jwt-verify": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bun-types": "latest"
+  },
+  "module": "src/index.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
   }
 }

@@ -2,17 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { Amplify } from 'aws-amplify'
+import awsConfig from './aws-exports'
 
-// Temporarily commented out to debug white screen
-// import { Amplify } from 'aws-amplify'
-// import awsConfig from './aws-exports'
-
-// Configure Amplify (v6 syntax)
-// try {
-//   Amplify.configure(awsConfig)
-// } catch (error) {
-//   console.error("Amplify configuration error:", error)
-// }
+// Configure Amplify with your Cognito User Pool
+Amplify.configure(awsConfig)
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

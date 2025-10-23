@@ -21,8 +21,9 @@ function Login() {
                 username, 
                 password 
             });
-            console.log("Login attempt:", { username });
-            alert("Login form submitted (Amplify auth disabled for debugging)!");
+            console.log("Login successful:", { isSignedIn, nextStep });
+            alert("Login successful!");
+            // window.location.href = "/main";
         } catch (err) {
             console.error("Login error:", err);
             setError(err.message || "Login failed");

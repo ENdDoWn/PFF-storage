@@ -22,10 +22,13 @@ function Login() {
                 password 
             });
             console.log("Login successful:", { isSignedIn, nextStep });
-            alert("Login successful!");
-            // window.location.href = "/main";
+            if (isSignedIn) {
+                window.location.href = "/main";
+            }
+            else {
+                setError("Additional steps required: " + nextStep);
+            }
         } catch (err) {
-            console.error("Login error:", err);
             setError(err.message || "Login failed");
         }
         setLoading(false);

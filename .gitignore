@@ -69,6 +69,19 @@ web_modules/
 .env
 .env.*
 !.env.example
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# AWS credentials and secrets
+credentials
+*.pem
+*.key
+*secret*
+*password*
+.aws/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

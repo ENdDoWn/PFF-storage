@@ -2,7 +2,7 @@ import Header from "../components/admin/HeaderAdmin"
 import Main from "../components/admin/Main"
 import Slide from "../components/admin/SlideBar"
 import User from "../components/admin/User"
-import Approve from "../components/admin/Approve"
+import AdminApprove from "../components/admin/AdminApprove"
 
 import { useState, useEffect } from "react"
 
@@ -14,10 +14,8 @@ function Admin(){
         switch(Switch) {
             case "main":
                 return <Main />;
-            case "user":
-                return <User />;
             case "approve":
-                return <Approve />;
+                return <AdminApprove />;
             default:
                 return <Main />;
         }

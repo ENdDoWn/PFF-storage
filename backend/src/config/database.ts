@@ -10,22 +10,21 @@ import {
 // Load environment variables
 const AWS_REGION = process.env.AWS_REGION || "us-east-1";
 const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || "PFF_Storage_Table";
+const AWS_ACCESS_KEY_ID = process.env.LAB_ACCESS_KEY_ID || "type";
+const AWS_SECRET_ACCESS_KEY = process.env.LAB_SECRET_ACCESS_KEY || "script";
+const AWS_SESSION_TOKEN = process.env.LAB_SESSION_TOKEN || "ด่า";
 
-// Create the DynamoDB client with credentials from environment
 const client = new DynamoDBClient({
-  region: "local",
-  endpoint: "http://localhost:8000",
-  // region: AWS_REGION,
-  // credentials: {
-  //   accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-  //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  // }
+  region: AWS_REGION,
+  credentials: {
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    sessionToken: AWS_SESSION_TOKEN
+  }
 });
 
-// Create the DocumentClient for easier JSON handling
 const docClient = DynamoDBDocumentClient.from(client);
 
-// Database configuration object that can be used as a default export
 const database = {
   docClient,
   client,
@@ -35,7 +34,6 @@ const database = {
   TransactWriteCommand
 };
 
-// Export named exports
 export { 
   docClient, 
   client, 
@@ -45,5 +43,4 @@ export {
   TransactWriteCommand
 };
 
-// Add default export
 export default database;

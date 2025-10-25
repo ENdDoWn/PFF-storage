@@ -20,7 +20,7 @@ import { MdPhone, MdOutlineEmail } from "react-icons/md";
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-function ContentHome() {
+function ContentHome({ isAuthenticated = false }) {
     const slide = [slide1, slide2, slide3, slide4, slide5];
     const sequence = [0, 1, 2, 3, 4];
     const [SeqIndex, setSeqIndex] = useState(0);
@@ -55,7 +55,9 @@ function ContentHome() {
                     <div className='h-[50vh] flex flex-col justify-center mx-auto gap-3'>
                         <h1 className="text-[4vh] font-bold leading-[1.1]">PFF storage <br /> ระบบคลังสินค้าที่ครบจบในตัว</h1>
                         <p className='text-[2vh]'>เช็คสินค้าเรียลไทม์ จัดการคลัง เพิ่ม-ลบ-แก้ไขสินค้า ติดตามการเช่า ข้อมูลปลอดภัย ค้นหาง่าย</p>
-                        <Link to="/login"><button className='flex justify-center items-center text-white text-[2vh] px-12 py-3 gap-2 rounded-full bg-gradient-to-r from-[#195CB9] to-[#117FD6] cursor-pointer'>เข้าสู่ระบบ <IoIosArrowDropright size={30} /></button></Link>
+                        {!isAuthenticated && (
+                            <Link to="/login"><button className='flex justify-center items-center text-white text-[2vh] px-12 py-3 gap-2 rounded-full bg-gradient-to-r from-[#195CB9] to-[#117FD6] cursor-pointer'>เข้าสู่ระบบ <IoIosArrowDropright size={30} /></button></Link>
+                        )}
                     </div>
                     <img src={warehouse} className='w-[30%] h-[50vh]'/>
                 </div>

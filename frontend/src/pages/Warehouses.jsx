@@ -5,7 +5,7 @@ import Main from '../components/user/AllWarehouse'
 function Warehouses(){
     return(
         <div className="bg-[#f3f4f6] w-full h-full">
-            <Header />
+            <Header isAuthenticated={true} />
             <Main />
         </div>
     )

@@ -31,14 +31,10 @@ function StateThree({ onBack, onNext }){
             <div className="flex gap-5 w-full max-w-[800px]">
                 <div className="flex flex-1 items-center border-none rounded-xl px-7 py-5 gap-5 bg-[#f4f6f7] shadow-sm">
                     <button className="rounded-full w-12 h-12 bg-[#b3bec3] text-white text-[1.5rem] font-bold">1</button>
-                    <p className="text-[#b3bec3] text-[1rem] font-semibold">ลงทะเบียน</p>
-                </div>
-                <div className="flex flex-1 items-center border-none rounded-xl px-7 py-5 gap-5 bg-[#f4f6f7] shadow-sm">
-                    <button className="rounded-full w-12 h-12 bg-[#b3bec3] text-white text-[1.5rem] font-bold">2</button>
                     <p className="text-[#b3bec3] text-[1rem] font-semibold">เลือกห้องที่จะเช่า</p>
                 </div>
                 <div className="flex flex-1 items-center border-none rounded-xl px-7 py-5 gap-5 bg-blue-600 shadow-sm">
-                    <button className="rounded-full w-12 h-12 bg-white text-blue-600 text-[1.5rem] font-bold">3</button>
+                    <button className="rounded-full w-12 h-12 bg-white text-blue-600 text-[1.5rem] font-bold">2</button>
                     <p className="text-white text-[1rem] font-semibold">ชำระเงิน</p>
                 </div>
             </div>

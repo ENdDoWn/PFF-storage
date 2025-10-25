@@ -8,33 +8,52 @@ import logo from "../../assets/logo_condo.png";
 function SlideBar({ isExpanded, setIsExpanded, Switch, setSwitch }){
 
     return(
-        <div className={`bg-[#1b1d36] flex flex-col justify-between transition-all duration-300 flex-shrink-0 overflow-hidden fixed left-0 top-0 h-screen ${isExpanded ? "w-60" : "w-20"}`}>
+        <div className={`bg-gradient-to-b from-[#1e293b] to-[#0f172a] flex flex-col justify-between transition-all duration-300 flex-shrink-0 overflow-hidden fixed left-0 top-0 h-screen shadow-2xl ${isExpanded ? "w-64" : "w-20"}`}>
             <div className="flex flex-col items-center">
-                <div className="flex justify-center items-center w-full pt-4 pb-7">
+                <div className="flex justify-center items-center w-full pt-6 pb-8">
                     <div className={`flex items-center transition-all duration-300 ${isExpanded ? "gap-3" : "gap-0"}`}>
-                        <img src={logo} className="w-12 h-12 rounded-full flex-shrink-0" />
+                        <div className="relative">
+                            <img src={logo} className="w-12 h-12 rounded-full flex-shrink-0 border-2 border-blue-400 shadow-lg" />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-[#1e293b]"></div>
+                        </div>
                         <p className={`font-bold text-[1.5rem] text-white whitespace-nowrap transition-all duration-300 ${isExpanded ? "opacity-100 w-auto delay-150" : "opacity-0 w-0"}`}>PFF Storage</p>
                     </div>
                 </div>
-                <div className="grid text-white w-full">
-                    <button onClick={() => setSwitch("main")} className={`whitespace-nowrap flex items-center gap-3 py-3 px-5 min-w-[240px] text-[1.3rem] transition-all duration-300 hover:bg-[#2b2f4b] border-l-4 ${Switch === "main" ? "border-l-orange-400 bg-[#2b2f4b]" : "border-l-transparent"}`}>
-                        <MdHomeFilled className="flex-shrink-0" />
-                        <span className={`whitespace-nowrap transition-opacity duration-300 ${isExpanded ? "opacity-100 delay-150" : "opacity-0"}`}>หน้าหลัก</span>
+                <div className="w-full px-3 mb-2">
+                    <div className={`bg-gradient-to-r from-blue-500/10 to-indigo-500/10 backdrop-blur-sm rounded-xl p-3 transition-all duration-300 ${isExpanded ? "opacity-100" : "opacity-0"}`}>
+                        <p className="text-xs text-blue-300 uppercase tracking-wider mb-1">Navigation</p>
+                    </div>
+                </div>
+                <div className="grid text-white w-full gap-2 px-3">
+                    <button 
+                        onClick={() => setSwitch("main")} 
+                        className={`relative whitespace-nowrap flex items-center gap-4 py-3.5 px-4 rounded-xl text-[1.15rem] font-medium transition-all duration-300 group ${Switch === "main" ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/50" : "hover:bg-white/5"}`}
+                    >
+                        <MdHomeFilled className={`flex-shrink-0 text-xl ${Switch === "main" ? "text-white" : "text-gray-400 group-hover:text-white"}`} />
+                        <span className={`whitespace-nowrap transition-opacity duration-300 ${isExpanded ? "opacity-100 delay-150" : "opacity-0"} ${Switch === "main" ? "text-white" : "text-gray-300"}`}>หน้าหลัก</span>
+                        {Switch === "main" && <div className="absolute right-3 w-2 h-2 bg-white rounded-full"></div>}
                     </button>
-                    <button onClick={() => setSwitch("user")} className={`flex items-center gap-3 py-3 px-5 min-w-[240px] text-[1.3rem] transition-all duration-300 hover:bg-[#2b2f4b] border-l-4 ${Switch === "user" ? "border-l-orange-400 bg-[#2b2f4b]" : "border-l-transparent"}`}>
-                        <IoMdPerson className="flex-shrink-0" />
-                        <span className={`whitespace-nowrap transition-opacity duration-300 ${isExpanded ? "opacity-100 delay-150" : "opacity-0"}`}>ผู้เช่า</span>
-                    </button>
-                    <button onClick={() => setSwitch("approve")} className={`flex items-center gap-3 py-3 px-5 min-w-[240px] text-[1.3rem] transition-all duration-300 hover:bg-[#2b2f4b] border-l-4 ${Switch === "approve" ? "border-l-orange-400 bg-[#2b2f4b]" : "border-l-transparent"}`}>
-                        <FaClipboardCheck className="flex-shrink-0" />
-                        <span className={`whitespace-nowrap transition-opacity duration-300 ${isExpanded ? "opacity-100 delay-150" : "opacity-0"}`}>อนุมัติ</span>
+                    <button 
+                        onClick={() => setSwitch("approve")} 
+                        className={`relative flex items-center gap-4 py-3.5 px-4 rounded-xl text-[1.15rem] font-medium transition-all duration-300 group ${Switch === "approve" ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/50" : "hover:bg-white/5"}`}
+                    >
+                        <FaClipboardCheck className={`flex-shrink-0 text-xl ${Switch === "approve" ? "text-white" : "text-gray-400 group-hover:text-white"}`} />
+                        <span className={`whitespace-nowrap transition-opacity duration-300 ${isExpanded ? "opacity-100 delay-150" : "opacity-0"} ${Switch === "approve" ? "text-white" : "text-gray-300"}`}>อนุมัติ</span>
+                        {Switch === "approve" && <div className="absolute right-3 w-2 h-2 bg-white rounded-full"></div>}
                     </button>
                 </div>
             </div>
 
-            <div className="flex justify-center items-center text-[2rem] text-white mb-4">
-                <button onClick={() => setIsExpanded(!isExpanded)} className="p-4 transition-transform duration-300">
-                      {isExpanded ? <FiChevronLeft /> : <FiChevronRight />}
+            <div className="flex justify-center items-center text-white mb-6 px-3">
+                <button 
+                    onClick={() => setIsExpanded(!isExpanded)} 
+                    className="w-full bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-all duration-300 flex items-center justify-center group"
+                >
+                    {isExpanded ? (
+                        <FiChevronLeft className="text-2xl group-hover:scale-110 transition-transform" />
+                    ) : (
+                        <FiChevronRight className="text-2xl group-hover:scale-110 transition-transform" />
+                    )}
                 </button>
             </div>
         </div>

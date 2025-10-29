@@ -10,14 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Setup Bun
+      uses: oven-sh/bun@v0.6.17
 
-    - name: Install Bun
-      run: |
-        curl -fsSL https://bun.sh/install | bash
-        export PATH="$HOME/.bun/bin:$PATH"
-        bun --version
+    - name: Check Bun version
+      run: bun --version
 
     - name: Install dependencies
       run: |

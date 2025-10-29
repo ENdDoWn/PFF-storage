@@ -76,6 +76,6 @@ jobs:
       run: |
         aws lambda invoke \
           --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-          --payload '{"rawPath":"/health","requestContext":{"http":{"method":"GET"}}}' \
+          --payload "{\"rawPath\":\"/health\",\"requestContext\":{\"http\":{\"method\":\"GET\"}}}" \
           response.json
         cat response.json

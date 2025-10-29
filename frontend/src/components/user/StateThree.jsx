@@ -3,21 +3,127 @@ import { RiBankCardFill } from "react-icons/ri";
 import { FaQrcode, FaRegCopy, FaCheckCircle } from "react-icons/fa";
 import { BsBank2 } from "react-icons/bs";
 import { IoMdCloudUpload } from "react-icons/io";
+import { ImSpinner2 } from "react-icons/im";
 
 import qrcode from '../../assets/qrcode.png'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005';
 
 function StateThree({ onBack, onNext }){
     const [FileName, setFileName] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
     const [Tab, setTab] = useState("qr");
     const [Copy, setCopy] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
+    const [uploadError, setUploadError] = useState("");
+    const [bookingInfo, setBookingInfo] = useState(null);
+    
     const account_number = "123-4-56789-0";
 
-    const FileSelect = (e) => {
+    useEffect(() => {
+        // Load booking info from sessionStorage
+        const booking = sessionStorage.getItem('currentBooking');
+        if (booking) {
+            setBookingInfo(JSON.parse(booking));
+        }
+    }, []);
+
+    const FileSelect = async (e) => {
         const file = e.target.files[0];
+        if (!file) return;
+
         setFileName("ไฟล์: " + file.name);
+        setSelectedFile(file);
+        setUploadError("");
+        setUploadSuccess(false);
+
+        // Auto-upload the file
+        await uploadPaymentSlip(file);
+    };
+
+    const uploadPaymentSlip = async (file) => {
+        if (!bookingInfo || !bookingInfo.rentals || bookingInfo.rentals.length === 0) {
+            setUploadError("ไม่พบข้อมูลการจอง");
+            return;
+        }
+
+        setUploading(true);
+        setUploadError("");
+
+        try {
+            const userId = bookingInfo.userId;
+            const rentalId = bookingInfo.rentals[0].rentalId; // Use first rental ID
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', userId);
+            formData.append('rentalId', rentalId);
+
+            console.log('Uploading payment slip:', { userId, rentalId, fileName: file.name });
+
+            const response = await fetch(`${API_URL}/api/upload/payment-slip`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('✅ Upload successful:', result.data);
+                setUploadSuccess(true);
+                
+                // Update all rentals with payment slip URL
+                await updateRentalsWithPaymentSlip(result.data.url);
+            } else {
+                console.error('❌ Upload failed:', result.error);
+                setUploadError(result.error || 'การอัปโหลดล้มเหลว');
+            }
+        } catch (error) {
+            console.error('Error uploading payment slip:', error);
+            setUploadError('เกิดข้อผิดพลาดในการอัปโหลดไฟล์');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const updateRentalsWithPaymentSlip = async (paymentSlipUrl) => {
+        if (!bookingInfo || !bookingInfo.rentals) {
+            console.warn('⚠️ No booking info or rentals found');
+            return;
+        }
+
+        console.log(`📝 Updating ${bookingInfo.rentals.length} rental(s) with payment slip URL:`, paymentSlipUrl);
+
+        try {
+            // Update each rental with the payment slip URL
+            const updatePromises = bookingInfo.rentals.map(async rental => {
+                console.log(`  → Updating rental ${rental.rentalId}...`);
+                const response = await fetch(`${API_URL}/api/rentals/${rental.rentalId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentSlip: paymentSlipUrl })
+                });
+                
+                const result = await response.json();
+                console.log(`  ${result.success ? '✅' : '❌'} Rental ${rental.rentalId}:`, result);
+                return result;
+            });
+
+            const results = await Promise.all(updatePromises);
+            const allSuccess = results.every(r => r.success);
+            
+            if (allSuccess) {
+                console.log('✅ All rentals updated with payment slip URL');
+            } else {
+                console.error('⚠️ Some rentals failed to update:', results.filter(r => !r.success));
+            }
+        } catch (error) {
+            console.error('❌ Error updating rentals:', error);
+        }
     };
 
     const copy = () =>{
@@ -65,13 +171,37 @@ function StateThree({ onBack, onNext }){
                                 <p className="text-[1rem] text-[#858585]">ใช้แอปพลิเคชันธนาคารบนมือถือสแกน QR Code เพื่อชำระเงิน</p>
                                 <div className="flex flex-col justify-center items-center mt-5">
                                     <span className="text-[1.2rem] font-bold mb-3">ส่งหลักฐานการชำระเงิน:</span>
-                                    <label htmlFor="file" className="h-[200px] w-[300px] flex flex-col items-center justify-center gap-5 cursor-pointer border-2 border-dashed border-[#cbd5e1] bg-[#f8fafc] p-6 rounded-lg shadow-[0px_48px_35px_-48px_rgba(0,0,0,0.1)]">
-                                        <IoMdCloudUpload size={60} color="#2563eb" />
-                                        <span className="font-normal text-gray-600">คลิกเพื่ออัปโหลดสลิปชำระเงิน</span>
-                                        <input type="file" id="file" className="hidden" onChange={FileSelect} />
+                                    <label htmlFor="file-qr" className={`h-[200px] w-[300px] flex flex-col items-center justify-center gap-5 border-2 border-dashed p-6 rounded-lg shadow-[0px_48px_35px_-48px_rgba(0,0,0,0.1)] ${uploading ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer bg-[#f8fafc]'} ${uploadSuccess ? 'border-green-500 bg-green-50' : 'border-[#cbd5e1]'}`}>
+                                        {uploading ? (
+                                            <>
+                                                <ImSpinner2 size={60} color="#2563eb" className="animate-spin" />
+                                                <span className="font-normal text-gray-600">กำลังอัปโหลด...</span>
+                                            </>
+                                        ) : uploadSuccess ? (
+                                            <>
+                                                <FaCheckCircle size={60} color="#10b981" />
+                                                <span className="font-normal text-green-600">อัปโหลดสำเร็จ!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <IoMdCloudUpload size={60} color="#2563eb" />
+                                                <span className="font-normal text-gray-600">คลิกเพื่ออัปโหลดสลิปชำระเงิน</span>
+                                            </>
+                                        )}
+                                        <input 
+                                            type="file" 
+                                            id="file-qr" 
+                                            className="hidden" 
+                                            onChange={FileSelect}
+                                            accept="image/jpeg,image/jpg,image/png,application/pdf"
+                                            disabled={uploading}
+                                        />
                                     </label>
                                     {FileName && (
                                         <div className="font-semibold text-[1.2rem] text-[#10b981] mt-5">{FileName}</div>
+                                    )}
+                                    {uploadError && (
+                                        <div className="font-semibold text-[1.2rem] text-red-600 mt-5">{uploadError}</div>
                                     )}
                                 </div>
                             </div>
@@ -102,13 +232,37 @@ function StateThree({ onBack, onNext }){
                                 </div>
                                 <div className="flex flex-col justify-center items-center mt-5">
                                     <span className="text-[1.2rem] font-bold mb-3">ส่งหลักฐานการชำระเงิน:</span>
-                                    <label htmlFor="file" className="h-[200px] w-[300px] flex flex-col items-center justify-center gap-5 cursor-pointer border-2 border-dashed border-[#cbd5e1] bg-[#f8fafc] p-6 rounded-lg shadow-[0px_48px_35px_-48px_rgba(0,0,0,0.1)]">
-                                        <IoMdCloudUpload size={60} color="#2563eb" />
-                                        <span className="font-normal text-gray-600">คลิกเพื่ออัปโหลดสลิปชำระเงิน</span>
-                                        <input type="file" id="file" className="hidden" onChange={FileSelect} />
+                                    <label htmlFor="file-bank" className={`h-[200px] w-[300px] flex flex-col items-center justify-center gap-5 border-2 border-dashed p-6 rounded-lg shadow-[0px_48px_35px_-48px_rgba(0,0,0,0.1)] ${uploading ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer bg-[#f8fafc]'} ${uploadSuccess ? 'border-green-500 bg-green-50' : 'border-[#cbd5e1]'}`}>
+                                        {uploading ? (
+                                            <>
+                                                <ImSpinner2 size={60} color="#2563eb" className="animate-spin" />
+                                                <span className="font-normal text-gray-600">กำลังอัปโหลด...</span>
+                                            </>
+                                        ) : uploadSuccess ? (
+                                            <>
+                                                <FaCheckCircle size={60} color="#10b981" />
+                                                <span className="font-normal text-green-600">อัปโหลดสำเร็จ!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <IoMdCloudUpload size={60} color="#2563eb" />
+                                                <span className="font-normal text-gray-600">คลิกเพื่ออัปโหลดสลิปชำระเงิน</span>
+                                            </>
+                                        )}
+                                        <input 
+                                            type="file" 
+                                            id="file-bank" 
+                                            className="hidden" 
+                                            onChange={FileSelect}
+                                            accept="image/jpeg,image/jpg,image/png,application/pdf"
+                                            disabled={uploading}
+                                        />
                                     </label>
                                     {FileName && (
                                         <div className="font-semibold text-[1.2rem] text-[#10b981] mt-5">{FileName}</div>
+                                    )}
+                                    {uploadError && (
+                                        <div className="font-semibold text-[1.2rem] text-red-600 mt-5">{uploadError}</div>
                                     )}
                                 </div>
                             </div>
@@ -117,7 +271,7 @@ function StateThree({ onBack, onNext }){
                 </div>
                 <div className="w-full flex justify-between items-end px-5 mb-10">
                     <button onClick={onBack} className="flex justify-center items-center border border-blue-600 rounded-2xl text-[1.5rem] text-blue-600 bg-white px-10 py-3 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(37,99,235,0.3)] hover:bg-blue-50 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]"><GrFormPreviousLink /> ย้อนกลับ</button>
-                    <Link to="/"><button onClick={onNext} className="flex justify-center items-center border rounded-2xl text-[1.5rem] text-white bg-orange-500 px-10 py-3 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(249,115,22,0.3)] hover:bg-orange-600 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(249,115,22,0.4)]">ยืนยัน</button></Link>
+                    <Link to="/"><button onClick={onNext} disabled={!uploadSuccess} className={`flex justify-center items-center border rounded-2xl text-[1.5rem] text-white px-10 py-3 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(249,115,22,0.3)] ${uploadSuccess ? 'bg-orange-500 hover:bg-orange-600 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(249,115,22,0.4)]' : 'bg-gray-400 cursor-not-allowed'}`}>ยืนยัน</button></Link>
                 </div>
             </div>
         </div>

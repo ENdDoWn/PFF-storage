@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
-import { FaCheck, FaTimes, FaClock, FaWarehouse } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaClock, FaWarehouse, FaImage, FaFilePdf } from 'react-icons/fa';
+import { IoClose } from "react-icons/io5";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005';
 
@@ -10,6 +11,8 @@ function AdminApprove() {
   const [error, setError] = useState('');
   const [adminId, setAdminId] = useState('');
   const [processing, setProcessing] = useState({});
+  const [showPaymentSlip, setShowPaymentSlip] = useState(false);
+  const [selectedPaymentSlip, setSelectedPaymentSlip] = useState(null);
 
   useEffect(() => {
     fetchAdmin();
@@ -124,6 +127,20 @@ function AdminApprove() {
     });
   };
 
+  const openPaymentSlip = (paymentSlipUrl) => {
+    if (!paymentSlipUrl) {
+      alert("ยังไม่มีสลิปชำระเงิน");
+      return;
+    }
+    setSelectedPaymentSlip(paymentSlipUrl);
+    setShowPaymentSlip(true);
+  };
+
+  const closePaymentSlip = () => {
+    setShowPaymentSlip(false);
+    setSelectedPaymentSlip(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -194,6 +211,9 @@ function AdminApprove() {
                       วันที่จอง
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      สลิป
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       การจัดการ
                     </th>
                   </tr>
@@ -227,6 +247,28 @@ function AdminApprove() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">{formatDate(rental.createdAt)}</div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {rental.paymentSlip ? (
+                          <button
+                            onClick={() => openPaymentSlip(rental.paymentSlip)}
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors text-sm"
+                          >
+                            {rental.paymentSlip.endsWith('.pdf') ? (
+                              <>
+                                <FaFilePdf />
+                                ดู PDF
+                              </>
+                            ) : (
+                              <>
+                                <FaImage />
+                                ดูสลิป
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <span className="text-sm text-gray-400 italic">ไม่มีสลิป</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex gap-2">
                           <button
@@ -251,6 +293,75 @@ function AdminApprove() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Slip Modal */}
+        {showPaymentSlip && selectedPaymentSlip && (
+          <div 
+            className="fixed inset-0 z-50 flex justify-center items-center"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}
+            onClick={closePaymentSlip}
+          >
+            <div 
+              className="bg-white rounded-xl shadow-2xl max-w-3xl max-h-[90vh] overflow-auto m-4" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-xl">
+                <h2 className="text-2xl font-bold text-gray-900">สลิปชำระเงิน</h2>
+                <button
+                  onClick={closePaymentSlip}
+                  className="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-red-50 rounded-full"
+                >
+                  <IoClose size={32} />
+                </button>
+              </div>
+              <div className="p-6 bg-gray-50">
+                {selectedPaymentSlip.endsWith('.pdf') ? (
+                  <div className="text-center py-12 bg-white rounded-lg">
+                    <FaFilePdf className="text-8xl text-red-500 mx-auto mb-6" />
+                    <p className="text-xl font-semibold text-gray-700 mb-4">ไฟล์ PDF</p>
+                    <a
+                      href={selectedPaymentSlip}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    >
+                      เปิดดู PDF ในแท็บใหม่
+                    </a>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center bg-white rounded-lg p-4">
+                    <img
+                      src={selectedPaymentSlip}
+                      alt="Payment Slip"
+                      className="max-w-full max-h-[70vh] h-auto rounded-lg shadow-lg border-2 border-gray-200"
+                      onError={(e) => {
+                        console.error('Failed to load image:', selectedPaymentSlip);
+                        e.target.onerror = null;
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23f0f0f0" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" fill="%23999" font-size="18"%3Eไม่สามารถโหลดรูปภาพได้%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    <div className="mt-4 flex gap-3">
+                      <a
+                        href={selectedPaymentSlip}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                      >
+                        เปิดในแท็บใหม่
+                      </a>
+                      <button
+                        onClick={closePaymentSlip}
+                        className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium"
+                      >
+                        ปิด
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

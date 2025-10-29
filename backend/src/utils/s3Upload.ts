@@ -31,8 +31,14 @@ export const uploadFileToS3 = async (
       ? `${folder}/${userId}/${timestamp}_${sanitizedFileName}`
       : `${folder}/${timestamp}_${sanitizedFileName}`;
 
+    console.log('🔧 S3 Upload Details:');
+    console.log('   Bucket:', S3_BUCKET_NAME);
+    console.log('   Key:', fileKey);
+    console.log('   Size:', file.length, 'bytes');
+
     // Determine content type
     const contentType = getContentType(fileName);
+    console.log('   Content-Type:', contentType);
 
     // Upload to S3
     const command = new PutObjectCommand({
@@ -44,7 +50,9 @@ export const uploadFileToS3 = async (
       // ACL: 'public-read'
     });
 
+    console.log('🚀 Sending to S3...');
     await s3Client.send(command);
+    console.log('✅ S3 upload complete!');
 
     // Generate URL
     const url = `https://${S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${fileKey}`;
@@ -55,7 +63,10 @@ export const uploadFileToS3 = async (
       url: url
     };
   } catch (error: any) {
-    console.error('Error uploading file to S3:', error);
+    console.error('❌ Error uploading file to S3:', error);
+    console.error('   Error name:', error.name);
+    console.error('   Error message:', error.message);
+    console.error('   Error code:', error.code);
     return {
       success: false,
       error: error.message || 'Failed to upload file'

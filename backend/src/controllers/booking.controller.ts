@@ -142,6 +142,38 @@ export const updateRentalStatus = async ({ params, body }: any) => {
   }
 };
 
+// Update rental payment slip
+export const updateRentalPaymentSlip = async ({ params, body }: any) => {
+  try {
+    const { rentalId } = params;
+    const { paymentSlip } = body;
+
+    if (!paymentSlip) {
+      return {
+        error: "Payment slip URL is required",
+        status: 400
+      };
+    }
+
+    console.log(`Updating rental ${rentalId} with payment slip:`, paymentSlip);
+
+    const updatedRental = await rentalModel.updatePaymentSlip(rentalId, paymentSlip);
+
+    return {
+      success: true,
+      rental: updatedRental,
+      message: "Payment slip updated successfully"
+    };
+  } catch (error: any) {
+    console.error("Error updating payment slip:", error);
+    return {
+      error: "Failed to update payment slip",
+      details: error.message,
+      status: 500
+    };
+  }
+};
+
 export const getAllRentals = async () => {
   try {
     const rentals = await rentalModel.findAll();

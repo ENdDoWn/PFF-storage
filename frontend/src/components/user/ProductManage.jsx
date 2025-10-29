@@ -87,6 +87,8 @@ function ProductManage({ userInfo }){
             const data = await response.json();
             
             if (data.success) {
+                console.log('✅ Fetched products:', data.products?.length || 0, 'items');
+                console.log('Products data:', data.products);
                 setProducts(data.products || []);
             }
         } catch (error) {
@@ -125,14 +127,24 @@ function ProductManage({ userInfo }){
 
     // NEW: Filter products by selected warehouse
     const getFilteredProducts = () => {
-        if (!selectedWarehouseId) return products;
+        if (!selectedWarehouseId) return products; // Show all products if no warehouse selected
         const roomIds = getSelectedWarehouseRoomIds();
-        return products.filter(p => roomIds.includes(p.roomId));
+        // Show products that match roomIds OR have been withdrawn (shipped/out-of-stock status)
+        return products.filter(p => 
+            roomIds.includes(p.roomId) || 
+            p.status === 'shipped' || 
+            p.status === 'out-of-stock' ||
+            p.status === 'withdrawn'
+        );
     };
 
     // Calculate stock statistics from products (UPDATED to use filtered products)
     const calculateStockStats = () => {
         const filteredProducts = getFilteredProducts(); // Use filtered products
+        console.log('📊 Calculating stats from', filteredProducts.length, 'filtered products');
+        console.log('All products:', products.length);
+        console.log('Selected warehouse:', selectedWarehouseId);
+        
         const totalProducts = filteredProducts.length;
         const inStockProducts = filteredProducts.filter(p => p.status === 'in-stock').length;
         const nearExpiryProducts = filteredProducts.filter(p => {
@@ -142,12 +154,12 @@ function ProductManage({ userInfo }){
             const daysUntilExpiry = (expiryDate - today) / (1000 * 60 * 60 * 24);
             return daysUntilExpiry <= 30 && daysUntilExpiry > 0 && p.status === 'in-stock';
         }).length;
-        const shippedProducts = filteredProducts.filter(p => p.status === 'shipped' || p.status === 'out-of-stock').length;
+        const shippedProducts = filteredProducts.filter(p => p.status === 'shipped' || p.status === 'out-of-stock' || p.status === 'withdrawn').length;
 
         const totalQuantity = filteredProducts.reduce((sum, p) => sum + (p.quantity || 0), 0);
         const inStockQuantity = filteredProducts.filter(p => p.status === 'in-stock').reduce((sum, p) => sum + (p.quantity || 0), 0);
 
-        return {
+        const stats = {
             total: totalProducts,
             totalQuantity,
             inStock: inStockProducts,
@@ -158,6 +170,9 @@ function ProductManage({ userInfo }){
             nearExpiryPercentage: totalProducts > 0 ? Math.round((nearExpiryProducts / totalProducts) * 100) : 0,
             shippedPercentage: totalProducts > 0 ? Math.round((shippedProducts / totalProducts) * 100) : 0
         };
+        
+        console.log('📊 Stats calculated:', stats);
+        return stats;
     };
 
     const handleAddProduct = async (productData) => {
@@ -213,21 +228,36 @@ function ProductManage({ userInfo }){
             const currentQuantity = product.quantity || 0;
             const newQuantity = currentQuantity - quantityToWithdraw;
 
+            console.log('🔄 Withdrawing product:', {
+                productId,
+                currentQuantity,
+                withdrawing: quantityToWithdraw,
+                newQuantity
+            });
+
             if (newQuantity < 0) {
                 alert('จำนวนสินค้าไม่เพียงพอ');
                 return;
             }
 
             if (newQuantity === 0) {
-                // Delete the product completely if quantity reaches 0
+                // Mark as shipped instead of deleting when quantity reaches 0
                 const response = await fetch(`${API_URL}/api/users/${userId}/products/${productId}`, {
-                    method: 'DELETE'
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        quantity: 0, 
+                        status: 'shipped'  // Mark as shipped to show in stats
+                    })
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(`เบิกสินค้าสำเร็จ ${quantityToWithdraw} หน่วย (ลบสินค้าออกจากระบบ)`);
+                    console.log('✅ Product marked as shipped:', result.product);
+                    alert(`เบิกสินค้าสำเร็จ ${quantityToWithdraw} หน่วย (สินค้าหมดแล้ว - ส่งออกแล้ว)`);
                     fetchProducts();
                     setWithdrawPopup(false);
                     setSelectedProduct(null);
@@ -247,6 +277,7 @@ function ProductManage({ userInfo }){
                 const result = await response.json();
 
                 if (result.success) {
+                    console.log('✅ Product quantity updated:', result.product);
                     alert(`เบิกสินค้าสำเร็จ ${quantityToWithdraw} หน่วย (เหลือ ${newQuantity} หน่วย)`);
                     fetchProducts();
                     setWithdrawPopup(false);

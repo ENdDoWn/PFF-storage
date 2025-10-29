@@ -1,6 +1,7 @@
 import * as rentalModel from '../models/booking.model';
 import * as warehouseModel from '../models/warehouse.model';
 import { CognitoIdentityProviderClient, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { getPresignedUrl } from '../utils/s3Upload';
 
 // Get dashboard stats
 export const getDashboardStats = async () => {
@@ -93,6 +94,8 @@ export const getAllUsers = async () => {
 export const getPendingRentals = async () => {
   try {
     const pendingRentals = await rentalModel.findPendingRentals();
+    
+    console.log('📋 Found pending rentals:', pendingRentals.length);
 
     const enrichedRentals = await Promise.all(
       pendingRentals.map(async (rental: any) => {
@@ -101,11 +104,34 @@ export const getPendingRentals = async () => {
           const rooms = await warehouseModel.getRoomsByWarehouseId(rental.warehouseId);
           const room = rooms.find((r: any) => r.roomId === rental.roomId);
           
+          // Generate presigned URL if payment slip exists
+          let paymentSlipUrl = null;
+          if (rental.paymentSlip) {
+            try {
+              // Extract S3 key from URL
+              const url = new URL(rental.paymentSlip);
+              const key = url.pathname.substring(1); // Remove leading slash
+              
+              // Generate presigned URL (valid for 1 hour)
+              paymentSlipUrl = await getPresignedUrl(key, 3600);
+              console.log(`✅ Generated presigned URL for ${rental.rentalId}`);
+            } catch (error) {
+              console.error(`❌ Error generating presigned URL:`, error);
+              paymentSlipUrl = rental.paymentSlip; // Fallback to original URL
+            }
+          }
+          
+          console.log(`📄 Rental ${rental.rentalId}:`, {
+            hasPaymentSlip: !!rental.paymentSlip,
+            paymentSlipUrl: paymentSlipUrl
+          });
+          
           return {
             ...rental,
             warehouseName: warehouse?.name || 'Unknown',
             roomNumber: room?.roomNumber || 'Unknown',
-            roomSize: room?.size || 'Unknown'
+            roomSize: room?.size || 'Unknown',
+            paymentSlip: paymentSlipUrl // Use presigned URL
           };
         } catch (error) {
           return rental;

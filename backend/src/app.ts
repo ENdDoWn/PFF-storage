@@ -18,3 +18,5 @@ const app = new Elysia()
   .listen(3005);
 
 console.log("🚀 Elysia running at http://localhost:3005");
+
+export { app };

@@ -159,7 +159,7 @@ function BoxRegister({ onSwitch }) {
 
             {/* Confirmation Modal/Popup */}
             {showConfirmation && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="absolute inset-0 flex items-center justify-center z-50" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}>
                     <div className="bg-white rounded-2xl p-8 w-[90%] max-w-md shadow-2xl">
                         <h2 className="text-2xl font-bold text-blue-600 mb-4 text-center">ยืนยันบัญชี</h2>
                         <p className="text-gray-600 text-center mb-6">

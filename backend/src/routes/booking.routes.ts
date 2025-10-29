@@ -8,6 +8,7 @@ const rentalRoutes = new Elysia({ prefix: "/api" })
   .get("/users/:userId/rentals", rentalController.getUserRentals)
   .get("/users/:userId/rentals/active", rentalController.getActiveRentals)
   .patch("/users/:userId/rentals/:rentalId/status", rentalController.updateRentalStatus)
+  .patch("/rentals/:rentalId", rentalController.updateRentalPaymentSlip)
   
   // Product routes
   .post("/products", rentalController.createProduct)

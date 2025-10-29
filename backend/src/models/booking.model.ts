@@ -121,6 +121,54 @@ export const updateStatus = async (userId: string, rentalId: string, status: Ren
   return result.Attributes;
 };
 
+// Update rental payment slip
+export const updatePaymentSlip = async (rentalId: string, paymentSlipUrl: string) => {
+  // First, find the rental to get the userId
+  const { QueryCommand } = await import("@aws-sdk/lib-dynamodb");
+  
+  const findCommand = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "GSI1_By_Type_and_Status",
+    KeyConditionExpression: "#type = :type",
+    FilterExpression: "rentalId = :rentalId",
+    ExpressionAttributeNames: {
+      "#type": "type"
+    },
+    ExpressionAttributeValues: {
+      ":type": "Rental",
+      ":rentalId": rentalId
+    },
+    Limit: 1
+  });
+  
+  const findResult = await docClient.send(findCommand);
+  
+  if (!findResult.Items || findResult.Items.length === 0) {
+    throw new Error("Rental not found");
+  }
+  
+  const rental = findResult.Items[0];
+  const userId = rental.userId;
+  
+  // Update the rental with payment slip URL
+  const result = await docClient.send(
+    new (await import("@aws-sdk/lib-dynamodb")).UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: {
+        PK: `USER#${userId}`,
+        SK: `RENTAL#${rentalId}`
+      },
+      UpdateExpression: "SET paymentSlip = :paymentSlip",
+      ExpressionAttributeValues: {
+        ":paymentSlip": paymentSlipUrl
+      },
+      ReturnValues: "ALL_NEW"
+    })
+  );
+  
+  return result.Attributes;
+};
+
 // Get all rentals (admin) - Using GSI1
 export const findAll = async () => {
   const { QueryCommand } = await import("@aws-sdk/lib-dynamodb");

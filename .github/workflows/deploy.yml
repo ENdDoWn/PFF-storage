@@ -66,9 +66,8 @@ jobs:
     - name: Update Lambda configuration for Bun Layer
       run: |
         aws lambda update-function-configuration \
-          --function-name PFF-storage \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
           --runtime provided.al2 \
-          --layers arn:aws:lambda:us-east-1:418386629438:layer:bun:3 \
+          --layers ${{ secrets.BUN_LAYER_ARN }} \
           --timeout 5 \
           --memory-size 128
-

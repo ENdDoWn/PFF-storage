@@ -1,0 +1,75 @@
+name: Deploy Bun Lambda to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Bun
+      run: |
+        curl -fsSL https://bun.sh/install | bash
+        export PATH="$HOME/.bun/bin:$PATH"
+        bun --version
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        bun install
+
+    - name: Build Lambda function
+      run: |
+        cd backend
+        bun build ./lambda.ts --outdir ./dist --target=node
+
+    - name: Package Lambda
+      run: |
+        cd backend
+        # Copy built lambda to root of package
+        cp dist/lambda.js ./lambda.js
+        # Create deployment package with lambda.js, node_modules, package.json, and src folder
+        zip -r ../lambda.zip lambda.js node_modules package.json src
+        cd ..
+        ls -lh lambda.zip
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Deploy Lambda
+      run: |
+        aws lambda update-function-code \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+          --zip-file fileb://lambda.zip
+
+    - name: Wait for Lambda update to complete
+      run: |
+        aws lambda wait function-updated \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
+    - name: Update Lambda configuration
+      run: |
+        aws lambda update-function-configuration \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+          --runtime nodejs22.x \
+          --handler lambda.handler \
+          --timeout 30 \
+          --memory-size 512
+
+    - name: Test Lambda function
+      run: |
+        aws lambda invoke \
+          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+          --payload '{"rawPath":"/health","requestContext":{"http":{"method":"GET"}}}' \
+          response.json
+        cat response.json

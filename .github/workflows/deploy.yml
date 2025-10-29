@@ -29,15 +29,15 @@ jobs:
     - name: Build Lambda function
       run: |
         cd backend
-        bun build ./lambda.ts --outdir ./dist --target=node
+        bun build ./lambda.ts --outdir ./dist --target=bun
 
-    - name: Package Lambda
+    - name: Package Lambda (without node_modules)
       run: |
-        cd backend
-        # Copy built lambda to root of package
-        cp dist/lambda.js ./lambda.js
-        # Create deployment package with lambda.js, node_modules, package.json, and src folder
-        zip -r ../lambda.zip lambda.js node_modules package.json src
+        cd backend/dist
+        # copy built lambda.js to root of package
+        cp lambda.js ../lambda.js
+        cd ..
+        zip -r ../lambda.zip lambda.js src package.json
         cd ..
         ls -lh lambda.zip
 
@@ -52,7 +52,7 @@ jobs:
     - name: Test AWS credentials
       run: aws sts get-caller-identity
 
-    - name: Deploy Lambda
+    - name: Deploy Lambda using Bun Runtime
       run: |
         aws lambda update-function-code \
           --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
@@ -63,23 +63,12 @@ jobs:
         aws lambda wait function-updated \
           --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
 
-    - name: Update Lambda configuration
+    - name: Update Lambda configuration for Bun Layer
       run: |
         aws lambda update-function-configuration \
           --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-          --runtime nodejs22.x \
-          --handler lambda.handler \
-          --timeout 30 \
-          --memory-size 512
-
-    - name: Create payload
-      run: |
-        echo '{"rawPath":"/health","requestContext":{"http":{"method":"GET"}}}' > backend/payload.json
-
-    - name: Test Lambda function
-      run: |
-        aws lambda invoke \
-          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-          --payload file://backend/payload.json \
-          backend/response.json
-        cat backend/response.json
+          --layers ${{ secrets.BUN_LAYER_ARN }} \
+          --runtime provided.al2 \
+          --handler lambda.fetch \
+          --timeout 5 \
+          --memory-size 128

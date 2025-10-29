@@ -10,7 +10,7 @@ const app = new Elysia()
   .use(cors({
     origin: 'https://www.pff-storage.enddown.online',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }))
   .use(cors())
   .get("/", () => {

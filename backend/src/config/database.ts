@@ -16,11 +16,11 @@ const AWS_SESSION_TOKEN = process.env.LAB_SESSION_TOKEN || "ด่า";
 
 const client = new DynamoDBClient({
   region: AWS_REGION,
-  credentials: {
-    accessKeyId: AWS_ACCESS_KEY_ID,
-    secretAccessKey: AWS_SECRET_ACCESS_KEY,
-    sessionToken: AWS_SESSION_TOKEN
-  }
+  // credentials: {
+  //   accessKeyId: AWS_ACCESS_KEY_ID,
+  //   secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  //   sessionToken: AWS_SESSION_TOKEN
+  // }
 });
 
 const docClient = DynamoDBDocumentClient.from(client);

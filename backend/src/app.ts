@@ -7,16 +7,25 @@ import adminRoutes from "./routes/admin.routes";
 import uploadRoutes from "./routes/upload.routes";
 
 const app = new Elysia()
+  .use(cors({
+    origin: 'https://www.pff-storage.enddown.online',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }))
   .use(cors())
-  .get("/", () => "Welcome to PFF-Storage API")
-  .get("/health", () => ({ status: "healthy", timestamp: new Date().toISOString() }))
+  .get("/", () => {
+    return new Response(
+      JSON.stringify({ message: 'Welcome to PFF-Storage API' }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200
+      }
+    )})
+  .get("/health", () => new Response('healthy', { status: 200 }))
   .use(userRoutes)
   .use(warehouseRoutes)
   .use(rentalRoutes)
   .use(adminRoutes)
-  .use(uploadRoutes)
-  .listen(3005);
-
-console.log("🚀 Elysia running at http://localhost:3005");
+  .use(uploadRoutes);
 
 export { app };

@@ -1,9 +1,17 @@
-import { Elysia } from 'elysia'
-import serverless from 'serverless-http'
+// lambda.ts
+import { app } from './src/app';
 
-import { app as mainApp } from './src/app'
-
-const app = new Elysia()
-    .use(mainApp)
-
-export const handler = serverless(app.fetch)
+// Bun runtime ต้องการ export default object ที่มี fetch()
+export default {
+  async fetch(request: Request): Promise<Response> {
+    try {
+      return await app.handle(request)
+    } catch (err) {
+      console.error('Lambda Error:', err)
+      return new Response(
+        JSON.stringify({ error: String(err) }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+}

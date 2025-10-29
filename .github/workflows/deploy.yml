@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup Bun
-      uses: oven-sh/bun@v0.6.17
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
 
     - name: Check Bun version
       run: bun --version

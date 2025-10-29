@@ -72,10 +72,14 @@ jobs:
           --timeout 30 \
           --memory-size 512
 
+    - name: Create payload
+      run: |
+        echo '{"rawPath":"/health","requestContext":{"http":{"method":"GET"}}}' > backend/payload.json
+
     - name: Test Lambda function
       run: |
         aws lambda invoke \
           --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-          --payload "{\"rawPath\":\"/health\",\"requestContext\":{\"http\":{\"method\":\"GET\"}}}" \
-          response.json
-        cat response.json
+          --payload file://backend/payload.json \
+          backend/response.json
+        cat backend/response.json

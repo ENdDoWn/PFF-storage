@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM template for Learner Lab
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app.lambda_handler
+      Runtime: python3.11
+
+      Role: arn:aws:iam::143373646457:role/LabRole
+
+      Events:
+        HelloWorldApi:
+          Type: Api 
+          Properties:
+            Path: /hello
+            Method: get

@@ -12,7 +12,6 @@ const app = new Elysia()
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }))
-  .use(cors())
   .get("/", () => {
     return new Response(
       JSON.stringify({ message: 'Welcome to PFF-Storage API' }),

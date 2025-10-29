@@ -50769,10 +50769,10 @@ var upload_routes_default = new Elysia({ prefix: "/api/upload" }).post("/payment
 
 // src/app.ts
 var app = new Elysia().use(cors({
-  origin: "*",
+  origin: "https://www.pff-storage.enddown.online",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
-})).use(cors()).get("/", () => {
+})).get("/", () => {
   return new Response(JSON.stringify({ message: "Welcome to PFF-Storage API" }), {
     headers: { "Content-Type": "application/json" },
     status: 200

@@ -13,7 +13,7 @@ function SlideBar({ isExpanded, setIsExpanded, Switch, setSwitch }){
                 <div className="flex justify-center items-center w-full pt-6 pb-8">
                     <div className={`flex items-center transition-all duration-300 ${isExpanded ? "gap-3" : "gap-0"}`}>
                         <div className="relative">
-                            <img src={logo} className="w-12 h-12 rounded-full flex-shrink-0 border-2 shadow-lg" />
+                            <img src={logo} className="w-12 h-12 rounded-full flex-shrink-0 shadow-lg" />
                         </div>
                         <p className={`font-bold text-[1.5rem] text-white whitespace-nowrap transition-all duration-300 ${isExpanded ? "opacity-100 w-auto delay-150" : "opacity-0 w-0"}`}>PFF Storage</p>
                     </div>

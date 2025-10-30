@@ -377,7 +377,6 @@ function ProductManage({ userInfo }){
         );
     }
 
-    // If user has no active rental, show warehouse selection page
     if (!hasActiveRental) {
         return (
             <div className="pt-[80px] w-full min-h-screen bg-[#f2f2f2] py-10 font-Montserrat">

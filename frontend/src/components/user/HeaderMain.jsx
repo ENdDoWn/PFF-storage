@@ -36,9 +36,9 @@ function HeaderMain({ userInfo }) {
           <div className="w-[2px] h-8 rounded-2xl bg-gray-200"></div>
           <label className="relative inline-block">
             <input type="checkbox" className="hidden peer" />
-            <p className="w-full h-full flex items-center justify-center gap-2 text-gray-700 text-[1.4rem] font-semibold cursor-pointer">
-              <span>{getFirstName()}</span>
-              <IoIosArrowDown className="w-full h-full rounded-full p-2 hover:bg-gray-200 transition duration-300 ease-in-out" />
+            <p className="w-full h-full flex items-center justify-center gap-2 text-gray-700 cursor-pointer">
+              <span className="text-[1rem] font-semibold">{getFirstName()}</span>
+              <IoIosArrowDown className="w-full h-full rounded-full p-2 hover:bg-gray-200 text-[1rem] transition duration-300 ease-in-out" />
             </p>
             <nav className="absolute right-0 top-[40px] w-[200px] bg-white border border-none rounded-lg shadow-[0_4px_10px_rgba(0,0,0,0.25)] invisible opacity-0 transition-all duration-200 ease-in-out z-10 peer-checked:visible peer-checked:opacity-100">
               <ul className="list-none p-2 m-0">

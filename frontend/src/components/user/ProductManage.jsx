@@ -501,9 +501,9 @@ function ProductManage({ userInfo }){
                                             <button
                                                 key={warehouseId}
                                                 onClick={() => setSelectedWarehouseId(warehouseId)}
-                                                className={`text-left rounded-lg p-4 transition-all duration-200 ${
+                                                className={`text-left rounded-lg p-4 transition-all duration-200 cursor-pointer ${
                                                     isSelected 
-                                                        ? 'bg-blue-600 border-2 border-blue-700 shadow-lg transform scale-105' 
+                                                        ? 'bg-blue-600 border-2 border-blue-700 shadow-lg transform'
                                                         : 'bg-blue-50 border-2 border-blue-200 hover:border-blue-400 hover:shadow-md'
                                                 }`}
                                             >
@@ -550,27 +550,27 @@ function ProductManage({ userInfo }){
                             </>
                         )}
                     </div>
-                    <div className="grid grid-cols-4 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                         <p className="flex flex-col">
                             <span className="text-[1rem]">Organization</span>
                             <span className="text-[1rem] text-[#78b5ff] font-semibold">{userInfo?.nickname || 'N/A'}</span>
                         </p>
                         <div className="flex gap-5">
-                            <div className="w-[2px] h-16 rounded-2xl bg-gray-200"></div>
+                            <div className="hidden md:block w-[2px] h-16 rounded-2xl bg-gray-200"></div>
                             <p className="flex flex-col">
                                 <span className="text-[1rem]">location</span>
                                 <span className="text-[1rem] text-[#78b5ff] font-semibold">{userInfo?.address || 'N/A'}</span>
                             </p>
                         </div>
                         <div className="flex gap-5">
-                            <div className="w-[2px] h-16 rounded-2xl bg-gray-200"></div>
+                            <div className="hidden md:block w-[2px] h-16 rounded-2xl bg-gray-200"></div>
                             <p className="flex flex-col">
                                 <span className="text-[1rem]">Mobile</span>
                                 <span className="text-[1rem] text-[#78b5ff] font-semibold">{userInfo?.phone_number || 'N/A'}</span>
                             </p>
                         </div>
                         <div className="flex gap-5">
-                            <div className="w-[2px] h-16 rounded-2xl bg-gray-200"></div>
+                            <div className="hidden md:block w-[2px] h-16 rounded-2xl bg-gray-200"></div>
                             <p className="flex flex-col">
                                 <span className="text-[1rem]">Email</span>
                                 <span className="text-[1rem] text-[#78b5ff] font-semibold">{userInfo?.email || 'N/A'}</span>
@@ -735,7 +735,7 @@ function ProductManage({ userInfo }){
                                     className="w-full border-2 border-[#e2e8f0] rounded-2xl text-[1.1rem] px-5 py-3 transition duration-300 ease-in-out focus:outline-none focus:border-[#3b5bdb] focus:shadow-[0_0_0_4px_rgba(59,91,219,0.1)]" 
                                 />
                             </div>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-5">
                                 <div>
                                     <span className="flex items-center mb-2 text-[1.1rem] text-gray-600">วันที่สินค้าเข้า<LuAsterisk color="red" size={15} /></span>
                                     <input 
@@ -771,13 +771,13 @@ function ProductManage({ userInfo }){
                             <button 
                                 type="button"
                                 onClick={() => setPopup(false)} 
-                                className="flex justify-center items-center border border-blue-600 rounded-2xl text-[1.3rem] text-blue-600 bg-white px-5 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(37,99,235,0.3)] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]"
+                                className="flex justify-center items-center border border-orange-500 rounded-2xl text-[1.3rem] text-orange-500 bg-white px-5 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_8px_20px_rgba(249,115,22,0.4)]"
                             >
                                 cancel
                             </button>
                             <button 
                                 type="submit"
-                                className="flex justify-center items-center border rounded-2xl text-[1.3rem] text-white bg-orange-500 px-10 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(249,115,22,0.3)] hover:bg-orange-600 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(249,115,22,0.4)]"
+                                className="flex justify-center items-center border rounded-2xl text-[1.3rem] text-white bg-orange-500 px-10 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(249,115,22,0.3)] hover:bg-orange-600 hover:shadow-[0_8px_20px_rgba(249,115,22,0.4)]"
                             >
                                 add
                             </button>
@@ -801,7 +801,7 @@ function ProductManage({ userInfo }){
                         />
                     </div>
                     <div className="w-full h-[2px] bg-gray-200 mb-5"></div>
-                    <div className="mx-5 w-full px-5">
+                    <div className="w-full px-5">
                         <div className="bg-blue-50 rounded-xl p-4 mb-5">
                             <p className="text-gray-600 text-sm mb-2">สินค้า</p>
                             <p className="text-xl font-bold text-gray-800">{selectedProduct.name}</p>
@@ -877,7 +877,7 @@ function ProductManage({ userInfo }){
                                 setSelectedProduct(null);
                                 setWithdrawQuantity(0);
                             }}
-                            className="flex justify-center items-center border border-gray-400 rounded-2xl text-[1.3rem] text-gray-600 bg-white px-5 py-2 cursor-pointer transition duration-300 ease-in-out hover:bg-gray-50"
+                            className="flex justify-center items-center border border-red-500 rounded-2xl text-[1.3rem] text-gray-600 bg-red-500 px-5 py-2 cursor-pointer transition duration-300 ease-in-out hover:bg-red-50"
                         >
                             ยกเลิก
                         </button>
@@ -889,7 +889,7 @@ function ProductManage({ userInfo }){
                                     alert('กรุณาระบุจำนวนที่ถูกต้อง');
                                 }
                             }}
-                            className="flex justify-center items-center border rounded-2xl text-[1.3rem] text-white bg-red-500 px-10 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(239,68,68,0.3)] hover:bg-red-600 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(239,68,68,0.4)]"
+                            className="flex justify-center items-center border rounded-2xl text-[1.3rem] text-white bg-red-500 px-10 py-2 cursor-pointer transition duration-300 ease-in-out shadow-[0_5px_15px_rgba(239,68,68,0.3)] hover:bg-red-600 hover:shadow-[0_8px_20px_rgba(239,68,68,0.4)]"
                         >
                             ยืนยันเบิก
                         </button>

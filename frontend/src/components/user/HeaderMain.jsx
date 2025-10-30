@@ -27,7 +27,7 @@ function HeaderMain({ userInfo }) {
     <header className="fixed top-0 left-0 w-full flex justify-center items-center bg-white h-16 px-10 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.3)] z-50 font-Montserrat">
       <div className="w-full flex justify-between items-center">
         <p className="flex justify-center items-center gap-4 text-[1.8rem] font-bold">Dashboard</p>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-auto">
           <Link to="/warehouse">
             <button className="flex justify-center items-center px-5 py-2 rounded-full cursor-pointer text-[1.1rem] font-semibold text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out">
               คลังสินค้า
@@ -38,7 +38,7 @@ function HeaderMain({ userInfo }) {
             <input type="checkbox" className="hidden peer" />
             <p className="w-full h-full flex items-center justify-center gap-2 text-gray-700 cursor-pointer">
               <span className="text-[1rem] font-semibold">{getFirstName()}</span>
-              <IoIosArrowDown className="w-full h-full rounded-full p-2 hover:bg-gray-200 text-[1rem] transition duration-300 ease-in-out" />
+              <IoIosArrowDown className="w-full h-full rounded-full p-2 hover:bg-gray-200 transition duration-300 ease-in-out" size={20} />
             </p>
             <nav className="absolute right-0 top-[40px] w-[200px] bg-white border border-none rounded-lg shadow-[0_4px_10px_rgba(0,0,0,0.25)] invisible opacity-0 transition-all duration-200 ease-in-out z-10 peer-checked:visible peer-checked:opacity-100">
               <ul className="list-none p-2 m-0">

@@ -257,7 +257,7 @@ function ProductManage({ userInfo }){
 
                 if (result.success) {
                     console.log('✅ Product marked as shipped:', result.product);
-                    alert(`เบิกสินค้าสำเร็จ ${quantityToWithdraw} หน่วย (สินค้าหมดแล้ว - ส่งออกแล้ว)`);
+                    alert(`เบิกสินค้าสำเร็จ ${quantityToWithdraw} หน่วย`);
                     fetchProducts();
                     setWithdrawPopup(false);
                     setSelectedProduct(null);
@@ -877,7 +877,7 @@ function ProductManage({ userInfo }){
                                 setSelectedProduct(null);
                                 setWithdrawQuantity(0);
                             }}
-                            className="flex justify-center items-center border border-red-500 rounded-2xl text-[1.3rem] text-gray-600 bg-red-500 px-5 py-2 cursor-pointer transition duration-300 ease-in-out hover:bg-red-50"
+                            className="flex justify-center items-center border border-red-500 rounded-2xl text-[1.3rem] text-red-600 bg-white px-5 py-2 cursor-pointer transition duration-300 ease-in-out hover:bg-red-50"
                         >
                             ยกเลิก
                         </button>
